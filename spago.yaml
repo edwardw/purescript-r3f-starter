@@ -1,0 +1,17 @@
+package:
+  dependencies:
+    - console
+    - effect
+    - prelude
+    - react-basic
+    - react-basic-dom
+    - react-basic-hooks
+    - react-basic-three
+    - web-html
+  name: r3-starter
+workspace:
+  extra_packages:
+    react-basic-three:
+      path: ../purescript-react-basic-three
+  package_set:
+    registry: 46.1.1
