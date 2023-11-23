@@ -6,12 +6,12 @@ package:
     - react-basic
     - react-basic-dom
     - react-basic-hooks
-    - react-basic-three
+    - react-basic-r3f
     - web-html
   name: r3-starter
 workspace:
   extra_packages:
-    react-basic-three:
-      path: ../purescript-react-basic-three
+    react-basic-r3f:
+      path: ../purescript-react-basic-r3f
   package_set:
     registry: 46.1.1
