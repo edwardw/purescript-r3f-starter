@@ -23,7 +23,7 @@ mkApp = do
   innerWidth <- Window.innerWidth window
   innerHeight <- Window.innerHeight window
 
-  fog <- runEffectFn1 R3F.createFog  { color: "#ffffff", near: 0.0025, far: 50.0 }
+  fog <- runEffectFn1 R3F.createFog { color: "#ffffff", near: 0.0025, far: 50.0 }
   scene <- runEffectFn1 R3F.createScene fog
 
   let
@@ -66,16 +66,24 @@ mkApp = do
   R3F.lilGUIAdd gui props "cubeSpeed" $ NumberField (-0.2) 0.2 0.01
   R3F.lilGUIAdd gui props "torusSpeed" $ NumberField (-0.2) 0.2 0.01
 
+  -- Here it demonstrates how to do basic animation by changing a component's
+  -- position and rotation.
+  --
+  -- In order to do that in `@react-three/fiber`, one has to use its specific
+  -- `useFrame` hook. Inside the hook's callback function, the properties of the
+  -- target component must be manipulated not directly but through a react
+  -- `ref`, which also has to be assigned to the target component's ref
+  -- property.
   cube <- Hooks.component "cube" \_ -> Hooks.do
     ref <- useRef empty
     step /\ setStep <- useState 0.0
 
-    useFrame \_ -> const do
+    useFrame $ const $ const do
       setStep (_ + 0.04)
       runEffectFn2 setPosition ref
         $ mkFn3 \_ -> \_ -> \z -> [ 4.0 * cos step, 4.0 * abs (sin step), z ]
       runEffectFn2 setRotation ref
-        $ mkFn3 \x -> \y -> \z -> map (_ + props.cubeSpeed) [ x, y , z ]
+        $ mkFn3 \x -> \y -> \z -> map (_ + props.cubeSpeed) [ x, y, z ]
     pure do
       R3F.boxGeometry
         { ref: ref
@@ -88,7 +96,7 @@ mkApp = do
   torusKnot <- Hooks.component "torusKnot" \_ -> Hooks.do
     ref <- useRef empty
 
-    useFrame \_ -> const do
+    useFrame $ const $ const do
       runEffectFn2 setRotation ref
         $ mkFn3 \x -> \y -> \z -> [ x - props.torusSpeed, y + props.torusSpeed, z - props.torusSpeed ]
     pure do
