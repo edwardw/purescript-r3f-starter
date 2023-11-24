@@ -33,7 +33,7 @@ mkApp = do
       , aspect: toNumber (innerWidth) / toNumber (innerHeight)
       , near: 0.1
       , far: 1000
-      , position: [ -3, 8, 2 ]
+      , position: [ -3, 2, 8 ]
       }
     dirLight = R3F.directionalLight
       { color: "#aaaaaa"
@@ -106,9 +106,9 @@ mkApp = do
       R3F.canvas
         { shadows: "soft"
         , scene
-        , camera
         , children:
-            [ R3F.ambientLight { color: "#666666" }
+            [ camera
+            , R3F.ambientLight { color: "#666666" }
             , dirLight
             , control
             , cube {}

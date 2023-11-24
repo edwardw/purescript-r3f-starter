@@ -9,7 +9,7 @@
     "bundle:prod": "npm run build:prod && purs-backend-es bundle-app --no-build --to='./bundle/Main/index.js'",
     "test": "spago test",
     "postinstall": "spago install && npm run build:dev",
-    "start": "parcel html/index.html --open"
+    "serve": "parcel html/index.html --open"
   },
   "keywords": [],
   "author": "",
