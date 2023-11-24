@@ -6,7 +6,7 @@ import Data.Function.Uncurried (mkFn3)
 import Data.Int (toNumber)
 import Data.Number (abs, cos, pi, sin)
 import Data.Tuple.Nested ((/\))
-import Effect.Uncurried (runEffectFn2)
+import Effect.Uncurried (runEffectFn1, runEffectFn2)
 import React.Basic (empty)
 import React.Basic.Hooks (Component, useRef, useState)
 import React.Basic.Hooks as Hooks
@@ -22,6 +22,10 @@ mkApp = do
   window <- window
   innerWidth <- Window.innerWidth window
   innerHeight <- Window.innerHeight window
+
+  fog <- runEffectFn1 R3F.createFog  { color: "#ffffff", near: 0.0025, far: 50.0 }
+  scene <- runEffectFn1 R3F.createScene fog
+
   let
     camera = R3F.perspectiveCamera
       { makeDefault: true
@@ -101,6 +105,7 @@ mkApp = do
     pure do
       R3F.canvas
         { shadows: "soft"
+        , scene
         , camera
         , children:
             [ R3F.ambientLight { color: "#666666" }
