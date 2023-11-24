@@ -2,11 +2,18 @@ module App where
 
 import Prelude
 
+import Data.Function.Uncurried (mkFn3)
 import Data.Int (toNumber)
-import Data.Number (pi)
-import React.Basic.Hooks (Component)
+import Data.Number (abs, cos, pi, sin)
+import Data.Tuple.Nested ((/\))
+import Effect.Uncurried (runEffectFn2)
+import React.Basic (empty)
+import React.Basic.Hooks (Component, useRef, useState)
 import React.Basic.Hooks as Hooks
+import React.Basic.R3F (LilGUIProperty(..))
 import React.Basic.R3F as R3F
+import React.Basic.R3F.Hooks (useFrame)
+import React.Basic.R3F.Types (setPosition, setRotation)
 import Web.HTML (window)
 import Web.HTML.Window as Window
 
@@ -39,20 +46,6 @@ mkApp = do
       , minPolarAngle: pi / 4.0
       , maxPolarAngle: 3.0 * pi / 4.0
       }
-    cube = R3F.boxGeometry
-      { position: [ -1.0, 0.0, 0.0 ]
-      , rotation: [ 0.0, 0.0, 0.0]
-      , castShadow: true
-      , children:
-          [ R3F.meshPhongMaterial { attach: "material", args: [ { color: "#0000ff" } ] } ]
-      }
-    torusKnot = R3F.torusKnotGeometry
-      { args: [ 0.5, 0.2, 100.0, 100.0 ]
-      , position: [ 2, 0, 0 ]
-      , castShadow: true
-      , children:
-          [ R3F.meshStandardMaterial { attach: "material", args: [ { color: "#00ff88", roughness: 0.1 } ] } ]
-      }
     ground = R3F.planeGeometry
       { args: [ 10_000.0, 10_000.0 ]
       , position: [ 0.0, -2.0, 0.0 ]
@@ -61,6 +54,48 @@ mkApp = do
       , children:
           [ R3F.meshLambertMaterial { attach: "material", args: [ { color: "#ffffff" } ] } ]
       }
+
+  let
+    props = { cubeSpeed: 0.01, torusSpeed: 0.01 }
+
+  gui <- R3F.lilGUICreate
+  R3F.lilGUIAdd gui props "cubeSpeed" $ NumberField (-0.2) 0.2 0.01
+  R3F.lilGUIAdd gui props "torusSpeed" $ NumberField (-0.2) 0.2 0.01
+
+  cube <- Hooks.component "cube" \_ -> Hooks.do
+    ref <- useRef empty
+    step /\ setStep <- useState 0.0
+
+    useFrame \_ -> const do
+      setStep (_ + 0.04)
+      runEffectFn2 setPosition ref
+        $ mkFn3 \_ -> \_ -> \z -> [ 4.0 * cos step, 4.0 * abs (sin step), z ]
+      runEffectFn2 setRotation ref
+        $ mkFn3 \x -> \y -> \z -> map (_ + props.cubeSpeed) [ x, y , z ]
+    pure do
+      R3F.boxGeometry
+        { ref: ref
+        , position: [ -1.0, 0.0, 0.0 ]
+        , castShadow: true
+        , children:
+            [ R3F.meshPhongMaterial { attach: "material", args: [ { color: "#0000ff" } ] } ]
+        }
+
+  torusKnot <- Hooks.component "torusKnot" \_ -> Hooks.do
+    ref <- useRef empty
+
+    useFrame \_ -> const do
+      runEffectFn2 setRotation ref
+        $ mkFn3 \x -> \y -> \z -> [ x - props.torusSpeed, y + props.torusSpeed, z - props.torusSpeed ]
+    pure do
+      R3F.torusKnotGeometry
+        { ref: ref
+        , args: [ 0.5, 0.2, 100.0, 100.0 ]
+        , position: [ 2, 0, 0 ]
+        , castShadow: true
+        , children:
+            [ R3F.meshStandardMaterial { attach: "material", args: [ { color: "#00ff88", roughness: 0.1 } ] } ]
+        }
 
   Hooks.component "App" \_ -> Hooks.do
     pure do
@@ -71,10 +106,10 @@ mkApp = do
             [ R3F.ambientLight { color: "#666666" }
             , dirLight
             , control
-            , cube
-            , torusKnot
+            , cube {}
+            , torusKnot {}
             , ground
-            , R3F.stats {}
+            , R3F.stats
             ]
         }
 

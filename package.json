@@ -3,9 +3,10 @@
   "version": "1.0.0",
   "description": "Starter template for purescript-react-basic-three",
   "scripts": {
-    "build:dev": "spago build",
+    "build": "spago build",
     "build:prod": "spago build && purs-backend-es build",
-    "bundle": "npm run build:prod && purs-backend-es bundle-app --no-build --to=\"./bundle/Main/index.js\"",
+    "bundle": "npm run build && spago bundle --outfile='./bundle/Main/index.js'",
+    "bundle:prod": "npm run build:prod && purs-backend-es bundle-app --no-build --to='./bundle/Main/index.js'",
     "test": "spago test",
     "postinstall": "spago install && npm run build:dev",
     "start": "parcel html/index.html --open"
@@ -20,6 +21,7 @@
   "dependencies": {
     "@react-three/drei": "^9.88.17",
     "@react-three/fiber": "^8.15.11",
+    "lil-gui": "^0.19.1",
     "react": "^18.2.0"
   }
 }
