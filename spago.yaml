@@ -13,6 +13,7 @@ package:
 workspace:
   extra_packages:
     react-basic-r3f:
-      path: ../purescript-react-basic-r3f
+      git: https://github.com/edwardw/purescript-react-basic-r3f
+      ref: 2dbf9d7d196dfd580819b202e3f0b627de90d307
   package_set:
     registry: 46.1.1
