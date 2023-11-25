@@ -81,9 +81,9 @@ mkApp = do
     useFrame $ const $ const do
       setStep (_ + 0.04)
       runEffectFn2 setPosition ref
-        $ mkFn3 \_ -> \_ -> \z -> [ 4.0 * cos step, 4.0 * abs (sin step), z ]
+        $ mkFn3 \_ _ z -> [ 4.0 * cos step, 4.0 * abs (sin step), z ]
       runEffectFn2 setRotation ref
-        $ mkFn3 \x -> \y -> \z -> map (_ + props.cubeSpeed) [ x, y, z ]
+        $ mkFn3 \x y z -> map (_ + props.cubeSpeed) [ x, y, z ]
     pure do
       R3F.boxGeometry
         { ref: ref
@@ -97,8 +97,9 @@ mkApp = do
     ref <- useRef empty
 
     useFrame $ const $ const do
+      let speed = props.torusSpeed
       runEffectFn2 setRotation ref
-        $ mkFn3 \x -> \y -> \z -> [ x - props.torusSpeed, y + props.torusSpeed, z - props.torusSpeed ]
+        $ mkFn3 \x y z -> [ x - speed, y + speed, z - speed ]
     pure do
       R3F.torusKnotGeometry
         { ref: ref
